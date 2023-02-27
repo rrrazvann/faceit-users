@@ -1,0 +1,31 @@
+version: '3'
+
+networks:
+  faceit-network:
+    driver: bridge
+
+services:
+  faceit-mysql:
+    image: mysql/mysql-server:8.0.26-1.2.4-server
+    container_name: faceit-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: alpine
+      MYSQL_DATABASE: faceit
+      MYSQL_ROOT_HOST: '%'
+    volumes:
+        - ./db/data:/var/lib/mysql
+        - ./db/etc/my.cnf:/etc/my.cnf
+    ports:
+      - "9906:3306"
+    networks:
+      - faceit-network
+  faceit-go:
+    build: ./go
+    container_name: faceit-go
+    tty: true
+    volumes:
+      - ../:/go/src/faceit
+    ports:
+      - "64273:4273"
+    networks:
+      - faceit-network
